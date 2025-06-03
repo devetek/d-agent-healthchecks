@@ -24,21 +24,22 @@ func main() {
 	hostname := internal.GetHostname()
 
 	for _, task := range config.Tasks {
-		go func(t internal.Task) {
+		t := task // 💡 penting: buat salinan variabel agar goroutine tidak share `task`
+		go func() {
 			for {
 				fmt.Printf("🌐 BaseURL = %s\n", config.Global.BaseURL)
 				fmt.Printf("🔑 API Key = %s\n", config.Global.APIKey)
 
 				checkID, err := internal.EnsureCheckExists(t, config.Global, hostname)
 				if err != nil {
-					log.Printf("⚠️ Gagal sync check %s: %v", t.Name, err)
+					fmt.Printf("⚠️ Gagal sync check %s: %v\n", t.Name, err)
 				} else {
 					internal.RunTaskLoop(t, checkID, config.Global)
-
 				}
-				time.Sleep(60 * time.Second)
+
+				time.Sleep(60 * time.Second) // retry interval jika gagal
 			}
-		}(task)
+		}()
 	}
 
 	select {} // blok selamanya
