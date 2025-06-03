@@ -10,7 +10,7 @@ import (
 
 func main() {
 	clearCheckIDCache()
-	// Tambahkan flag config
+
 	configPath := flag.String("config", "configs/agent.yml", "Path to config file")
 	flag.Parse()
 
@@ -26,17 +26,17 @@ func main() {
 	for _, task := range config.Tasks {
 		t := task
 		go func() {
-			log.Printf("🕒 Inisialisasi task: %s", t.Name)
 			checkID, err := internal.EnsureCheckExists(t, config.Global, hostname)
 			if err != nil {
-				log.Printf("⚠️ Gagal sync check %s: %v", t.Name, err)
+				fmt.Printf("⚠️ Gagal sync check %s: %v\n", t.Name, err)
 				return
 			}
+			// 🚀 Hanya jalankan loop di sini, tidak perlu retry ulang ulang
 			internal.RunTaskLoop(t, checkID, config.Global)
 		}()
 	}
 
-	select {} // blok selamanya
+	select {} // block forever
 }
 
 func clearCheckIDCache() {
