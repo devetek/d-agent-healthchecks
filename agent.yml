@@ -1,0 +1,3 @@
+api_key: dummy_key
+health_base_url: https://example.com
+ping_interval: 300

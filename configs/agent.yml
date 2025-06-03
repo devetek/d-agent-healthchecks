@@ -1,0 +1,15 @@
+global:
+  api_key: hcw_0EyratoqQAHMhydS7vZzg6XEiT1B
+  ping_interval: 600
+  health_base_url: "https://job-monitor.sensor.devetek.com"
+  default_grace: 3600
+
+tasks:
+  - name: "Check MySQL Service"
+    slug: "check-mysql-service"
+    shell: "systemctl is-active --quiet mysql"
+    interval: 120
+    grace: 3600
+    tags:
+      - nestjs
+      - prod

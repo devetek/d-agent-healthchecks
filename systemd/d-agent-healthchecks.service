@@ -1,0 +1,14 @@
+[Unit]
+Description=Devetek Healthchecks Agent Service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/d-agent-healthchecks -config /etc/d-agent-healthchecks/agent.yml
+Restart=always
+RestartSec=5s
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

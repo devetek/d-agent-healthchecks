@@ -1,0 +1,5 @@
+cat > .gitignore <<EOF
+rpmbuild/
+rpmroot/
+dist/
+bin/
