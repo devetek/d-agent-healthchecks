@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -20,20 +21,37 @@ type CreateCheckPayload struct {
 
 // EnsureCheckExists memastikan UUID check tersedia (dari config, cache lokal, lookup, atau create baru)
 func EnsureCheckExists(task Task, global GlobalConfig, hostname string) (string, error) {
-	// 1. Cek dari cache lokal
-	if uuid, err := getUUIDFromCache(task.Slug); err == nil && uuid != "" {
-		log.Printf("📁 UUID ditemukan dari cache: %s", uuid)
-		return uuid, nil
-	}
-
-	// 2. Cek dari config (tidak update, hanya gunakan untuk ping)
+	// Jika UUID ada → verifikasi dulu ke server
 	if task.UUID != "" {
-		log.Printf("🧾 UUID ditemukan di config: %s (tidak di-update)", task.UUID)
-		_ = saveUUIDToCache(task.Slug, task.UUID)
-		return task.UUID, nil
+		log.Printf("🧾 UUID ditemukan di config: %s", task.UUID)
+		url := fmt.Sprintf("%s/api/v3/checks/%s", global.BaseURL, task.UUID)
+
+		req, _ := http.NewRequest("GET", url, nil)
+		req.Header.Set("X-Api-Key", global.APIKey)
+
+		res, err := http.DefaultClient.Do(req)
+		if err != nil {
+			return "", fmt.Errorf("❌ Gagal verifikasi UUID %s: %v", task.UUID, err)
+		}
+		defer res.Body.Close()
+
+		if res.StatusCode == 200 {
+			log.Printf("✅ Check dengan UUID %s valid, digunakan langsung", task.UUID)
+			return task.UUID, nil
+		}
+
+		log.Printf("⚠️ UUID %s tidak ditemukan, buat check baru...", task.UUID)
 	}
 
-	// 3. Lookup dari slug
+	// Jika tidak ada UUID (atau tidak valid) → cek via slug
+	checkIDFile := filepath.Join(".check_id", fmt.Sprintf("%s.txt", task.Slug))
+	if data, err := os.ReadFile(checkIDFile); err == nil {
+		cachedUUID := strings.TrimSpace(string(data))
+		log.Printf("📦 Menggunakan UUID dari cache lokal: %s", cachedUUID)
+		return cachedUUID, nil
+	}
+
+	// Cek slug ke server
 	url := fmt.Sprintf("%s/api/v3/checks/%s", global.BaseURL, task.Slug)
 	req, _ := http.NewRequest("GET", url, nil)
 	req.Header.Set("X-Api-Key", global.APIKey)
@@ -48,7 +66,8 @@ func EnsureCheckExists(task Task, global GlobalConfig, hostname string) (string,
 		log.Printf("➕ Check belum ada: %s → buat baru", task.Slug)
 		uuid, err := CreateCheck(task, global, hostname)
 		if err == nil {
-			_ = saveUUIDToCache(task.Slug, uuid)
+			os.MkdirAll(".check_id", 0755)
+			_ = os.WriteFile(checkIDFile, []byte(uuid), 0644)
 		}
 		return uuid, err
 	}
@@ -60,7 +79,9 @@ func EnsureCheckExists(task Task, global GlobalConfig, hostname string) (string,
 		return "", err
 	}
 
-	_ = saveUUIDToCache(task.Slug, resp.UUID)
+	log.Printf("📡 UUID ditemukan dari slug: %s", resp.UUID)
+	os.MkdirAll(".check_id", 0755)
+	_ = os.WriteFile(checkIDFile, []byte(resp.UUID), 0644)
 	return resp.UUID, nil
 }
 
@@ -106,16 +127,6 @@ func CreateCheck(task Task, global GlobalConfig, hostname string) (string, error
 	}
 	err = json.NewDecoder(res.Body).Decode(&resp)
 	return resp.UUID, err
-}
-
-// getUUIDFromCache membaca UUID dari file lokal
-func getUUIDFromCache(slug string) (string, error) {
-	path := fmt.Sprintf("/etc/d-agent-healthchecks/.check_id/%s.txt", slug)
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return "", err
-	}
-	return strings.TrimSpace(string(data)), nil
 }
 
 // saveUUIDToCache menyimpan UUID ke file lokal

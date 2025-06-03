@@ -69,3 +69,7 @@ sudo systemctl start d-agent-healthchecks
 sudo systemctl status d-agent-healthchecks
 
 sudo systemctl restart d-agent-healthchecks
+
+
+RPM Install
+sudo rpm -e d-agent-healthchecks
