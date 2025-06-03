@@ -73,3 +73,5 @@ sudo systemctl restart d-agent-healthchecks
 
 RPM Install
 sudo rpm -e d-agent-healthchecks
+
+./build/build-rpm.sh

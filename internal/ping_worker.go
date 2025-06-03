@@ -23,7 +23,7 @@ func StartPingWorker() {
 	go func() {
 		for ping := range pingQueue {
 			sendPing(ping)
-			time.Sleep(500 * time.Millisecond) // delay antar ping
+			time.Sleep(5000 * time.Millisecond) // delay antar ping
 		}
 	}()
 }
