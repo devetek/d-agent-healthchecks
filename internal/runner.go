@@ -23,7 +23,6 @@ func runTaskOnce(task Task, uuid string, global GlobalConfig) {
 	start := time.Now()
 	cmd := exec.Command("bash", "-c", task.Shell)
 
-	// Output gabungan, supaya EPIPE tidak muncul
 	output, err := cmd.CombinedOutput()
 	duration := time.Since(start)
 
@@ -32,10 +31,10 @@ func runTaskOnce(task Task, uuid string, global GlobalConfig) {
 		if len(output) > 0 {
 			fmt.Println(string(output))
 		}
-		EnqueuePing(uuid, "fail", global, duration)
+		sendPing(uuid, "fail", global, duration)
 		return
 	}
 
 	fmt.Printf("✅ %s OK\n", task.Name)
-	EnqueuePing(uuid, "success", global, duration)
+	sendPing(uuid, "success", global, duration)
 }

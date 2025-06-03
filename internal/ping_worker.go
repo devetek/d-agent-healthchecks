@@ -18,29 +18,9 @@ type PingRequest struct {
 // Channel untuk antrian ping
 var pingQueue = make(chan PingRequest, 100)
 
-// Inisialisasi worker ping
-func StartPingWorker() {
-	go func() {
-		for ping := range pingQueue {
-			sendPing(ping)
-			time.Sleep(500 * time.Millisecond) // delay antar ping
-		}
-	}()
-}
-
-// Fungsi dipanggil dari runTaskOnce
-func EnqueuePing(uuid, status string, global GlobalConfig, dur time.Duration) {
-	pingQueue <- PingRequest{
-		UUID:     uuid,
-		Status:   status,
-		Global:   global,
-		Duration: dur,
-	}
-}
-
-func sendPing(p PingRequest) {
-	url := fmt.Sprintf("%s/ping/%s", p.Global.BaseURL, p.UUID)
-	if p.Status == "fail" {
+func sendPing(uuid, status string, global GlobalConfig, dur time.Duration) {
+	url := fmt.Sprintf("%s/ping/%s", global.BaseURL, uuid)
+	if status == "fail" {
 		url += "/fail"
 	}
 
@@ -52,7 +32,7 @@ func sendPing(p PingRequest) {
 	}
 
 	req.Header.Set("User-Agent", "d-agent-healthchecks")
-	req.Header.Set("X-Api-Key", p.Global.APIKey)
+	req.Header.Set("X-Api-Key", global.APIKey)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -61,5 +41,5 @@ func sendPing(p PingRequest) {
 	}
 	defer resp.Body.Close()
 
-	log.Printf("📡 Ping terkirim ke %s [%s], status: %d", url, p.Status, resp.StatusCode)
+	log.Printf("📡 Ping terkirim ke %s [%s], status: %d", url, status, resp.StatusCode)
 }

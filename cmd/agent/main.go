@@ -12,7 +12,6 @@ func main() {
 	// Tambahkan flag config
 	configPath := flag.String("config", "configs/agent.yml", "Path to config file")
 	flag.Parse()
-	internal.StartPingWorker()
 
 	fmt.Printf("📂 Using config: %s\n", *configPath)
 
