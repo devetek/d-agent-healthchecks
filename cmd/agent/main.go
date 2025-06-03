@@ -12,6 +12,7 @@ func main() {
 	// Tambahkan flag config
 	configPath := flag.String("config", "configs/agent.yml", "Path to config file")
 	flag.Parse()
+	internal.StartPingWorker()
 
 	fmt.Printf("📂 Using config: %s\n", *configPath)
 
@@ -33,6 +34,7 @@ func main() {
 					log.Printf("⚠️ Gagal sync check %s: %v", t.Name, err)
 				} else {
 					internal.RunTaskLoop(t, checkID, config.Global)
+
 				}
 				time.Sleep(60 * time.Second)
 			}

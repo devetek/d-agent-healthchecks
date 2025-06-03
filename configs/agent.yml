@@ -8,7 +8,7 @@ tasks:
   - name: "Check MySQL Service"
     slug: "check-mysql-service"
     shell: "systemctl is-active --quiet mysql"
-    interval: 120
+    interval: 60
     grace: 3600
     tags:
       - nestjs

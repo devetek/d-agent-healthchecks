@@ -2,7 +2,6 @@ package internal
 
 import (
 	"fmt"
-	"net/http"
 	"os/exec"
 	"time"
 )
@@ -21,14 +20,19 @@ func RunTaskLoop(task Task, checkUUID string, global GlobalConfig) {
 }
 
 func runTaskOnce(task Task, uuid string, global GlobalConfig) {
+	start := time.Now()
+
 	cmd := exec.Command("bash", "-c", task.Shell)
 	output, err := cmd.CombinedOutput()
+	duration := time.Since(start)
+
 	if err != nil {
 		fmt.Printf("❌ %s gagal: %v\n", task.Name, err)
 		fmt.Println(string(output))
-		http.Get(fmt.Sprintf("%s/ping/%s/fail", global.BaseURL, uuid))
+		EnqueuePing(uuid, "fail", global, duration)
 		return
 	}
+
 	fmt.Printf("✅ %s OK\n", task.Name)
-	http.Get(fmt.Sprintf("%s/ping/%s", global.BaseURL, uuid))
+	EnqueuePing(uuid, "success", global, duration)
 }
