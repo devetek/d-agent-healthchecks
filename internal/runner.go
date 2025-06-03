@@ -21,14 +21,17 @@ func RunTaskLoop(task Task, checkUUID string, global GlobalConfig) {
 
 func runTaskOnce(task Task, uuid string, global GlobalConfig) {
 	start := time.Now()
-
 	cmd := exec.Command("bash", "-c", task.Shell)
+
+	// Output gabungan, supaya EPIPE tidak muncul
 	output, err := cmd.CombinedOutput()
 	duration := time.Since(start)
 
 	if err != nil {
 		fmt.Printf("❌ %s gagal: %v\n", task.Name, err)
-		fmt.Println(string(output))
+		if len(output) > 0 {
+			fmt.Println(string(output))
+		}
 		EnqueuePing(uuid, "fail", global, duration)
 		return
 	}

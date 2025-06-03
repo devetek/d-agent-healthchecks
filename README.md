@@ -61,6 +61,7 @@ sudo rm -rf /var/lib/dpkg/info/d-agent-healthchecks.*
 #INSTALL
 go build -o build/bin/d-agent-healthchecks ./cmd/agent
 ./build/build-deb.sh
+./build/build-rpm.sh
 sudo dpkg -i d-agent-healthchecks_0.1.0_amd64.deb 
 sudo systemctl daemon-reexec
 sudo systemctl daemon-reload
