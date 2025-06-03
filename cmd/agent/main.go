@@ -5,10 +5,12 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"os"
 	"time"
 )
 
 func main() {
+	clearCheckIDCache()
 	// Tambahkan flag config
 	configPath := flag.String("config", "configs/agent.yml", "Path to config file")
 	flag.Parse()
@@ -42,4 +44,14 @@ func main() {
 	}
 
 	select {} // blok selamanya
+}
+
+func clearCheckIDCache() {
+	cacheDir := ".check_id"
+	err := os.RemoveAll(cacheDir)
+	if err != nil {
+		log.Printf("⚠️ Gagal hapus cache folder %s: %v", cacheDir, err)
+	} else {
+		log.Printf("🧹 Cache %s dibersihkan", cacheDir)
+	}
 }
