@@ -5,11 +5,4 @@ global:
   default_grace: 3600
 
 tasks:
-  - name: "Check MySQL Service"
-    slug: "check-mysql-service"
-    shell: "systemctl is-active --quiet mysql"
-    interval: 60
-    grace: 3600
-    tags:
-      - nestjs
-      - prod
+ 
