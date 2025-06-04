@@ -1,0 +1,21 @@
+[0;1;32m●[0m d-agent-healthchecks.service - Devetek Healthchecks Agent Service
+     Loaded: loaded (]8;;file://etos-etl-nodejs/etc/systemd/system/d-agent-healthchecks.service/etc/systemd/system/d-agent-healthchecks.service]8;;; [0;1;38;5;185mdisabled[0m; preset: [0;1;38;5;185mdisabled[0m)
+     Active: [0;1;32mactive (running)[0m since Tue 2025-06-03 15:15:38 UTC; 6s ago
+   Main PID: 569913 (d-agent-healthc)
+      Tasks: 18 (limit: 822037)
+     Memory: 23.5M
+        CPU: 503ms
+     CGroup: /system.slice/d-agent-healthchecks.service
+             ├─[0;38;5;245m569913 /usr/local/bin/d-agent-healthchecks -config /etc/d-agent-healthchecks/agent.yml[0m
+             └─[0;38;5;245m569930 "PM2 v6.0.5: God Daemon (/etc/.pm2)"[0m
+
+Jun 03 15:15:39 etos-etl-nodejs d-agent-healthchecks[569913]: Emitted 'error' event on Socket instance at:
+Jun 03 15:15:39 etos-etl-nodejs d-agent-healthchecks[569913]:     at emitErrorNT (node:internal/streams/destroy:169:8)
+Jun 03 15:15:39 etos-etl-nodejs d-agent-healthchecks[569913]:     at emitErrorCloseNT (node:internal/streams/destroy:128:3)
+Jun 03 15:15:39 etos-etl-nodejs d-agent-healthchecks[569913]:     at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+Jun 03 15:15:39 etos-etl-nodejs d-agent-healthchecks[569913]:   errno: -32,
+Jun 03 15:15:39 etos-etl-nodejs d-agent-healthchecks[569913]:   code: 'EPIPE',
+Jun 03 15:15:39 etos-etl-nodejs d-agent-healthchecks[569913]:   syscall: 'write'
+Jun 03 15:15:39 etos-etl-nodejs d-agent-healthchecks[569913]: }
+Jun 03 15:15:39 etos-etl-nodejs d-agent-healthchecks[569913]: Node.js v20.19.0
+Jun 03 15:15:39 etos-etl-nodejs d-agent-healthchecks[569913]: 2025/06/03 15:15:39 📡 Ping terkirim ke https://job-monitor.sensor.devetek.com/ping/715bf7a6-299a-4675-a372-a11c3a8d4daf/fail [fail], status: 200

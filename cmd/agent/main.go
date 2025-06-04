@@ -8,7 +8,10 @@ import (
 	"os"
 )
 
+var version = "0.1.0"
+
 func main() {
+	fmt.Printf("🌀 Agent Version: %s\n", version)
 	clearCheckIDCache()
 
 	configPath := flag.String("config", "configs/agent.yml", "Path to config file")
@@ -24,19 +27,18 @@ func main() {
 	hostname := internal.GetHostname()
 
 	for _, task := range config.Tasks {
-		t := task
-		go func() {
+		go func(t internal.Task) {
 			checkID, err := internal.EnsureCheckExists(t, config.Global, hostname)
 			if err != nil {
 				fmt.Printf("⚠️ Gagal sync check %s: %v\n", t.Name, err)
 				return
 			}
-			// 🚀 Hanya jalankan loop di sini, tidak perlu retry ulang ulang
+			log.Printf("▶️ Starting task loop for: %s", t.Name)
 			internal.RunTaskLoop(t, checkID, config.Global)
-		}()
+		}(task) // ✅ penting: lempar task ke parameter func
 	}
 
-	select {} // block forever
+	select {} // block selamanya
 }
 
 func clearCheckIDCache() {

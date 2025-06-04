@@ -21,10 +21,10 @@ fi
 # File path mapping
 if [[ "$ARCH" == "x86_64" ]]; then
   if [[ "$OS" == "debian" ]]; then
-    FILE="d-agent-healthchecks-0.1.0-1.x86_64.rpm"
+    FILE="d-agent-healthchecks_0.1.0_amd64.deb"
     CMD="sudo dpkg -i $FILE"
   else
-    FILE="d-agent-healthchecks-0.1.0-1.x86_64.rpm"
+    FILE="d-agent-healthchecks-0.1.0-1.el9.x86_64.rpm"
     CMD="sudo rpm -ivh $FILE"
   fi
 else

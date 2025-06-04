@@ -44,6 +44,8 @@ Summary:        Healthchecks.io agent for Linux
 License:        MIT
 Source0:        %{name}-%{version}.tar.gz
 
+%global debug_package %{nil}
+
 %description
 Agent to run service checks and send pings to Healthchecks.io.
 
@@ -51,7 +53,7 @@ Agent to run service checks and send pings to Healthchecks.io.
 %setup -q
 
 %build
-go build -o $APP_NAME ./cmd/agent
+go build -ldflags="-s -w" -o $APP_NAME ./cmd/agent
 
 %install
 mkdir -p %{buildroot}/usr/local/bin

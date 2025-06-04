@@ -73,6 +73,13 @@ sudo systemctl restart d-agent-healthchecks
 
 
 RPM Install
+sudo systemctl stop d-agent-healthchecks
+sudo systemctl disable d-agent-healthchecks
+sudo rm -f /usr/local/bin/d-agent-healthchecks
+sudo rm -rf /etc/d-agent-healthchecks
+sudo systemctl daemon-reexec
+sudo systemctl daemon-reload
+sudo rm -f /etc/systemd/system/d-agent-healthchecks.service
 sudo rpm -e d-agent-healthchecks
 
 ./build/build-rpm.sh
